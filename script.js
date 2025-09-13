@@ -67,8 +67,14 @@ document.addEventListener('DOMContentLoaded', () => {
         );
 
         if (results.length > 0) {
-            const headers = Object.keys(results[0]).filter(header => header !== '价格（美金）' && header !== '价格（人民币）');
-            const displayHeaders = [...headers, 'Price'];
+            const headers = Object.keys(results[0]).filter(header => header !== '价格（美金）' && header !== '价格（人民币）' && header !== '货币');
+            const priceIndex = headers.indexOf('价格（税前）');
+            const displayHeaders = [...headers];
+            if (priceIndex !== -1) {
+                displayHeaders.splice(priceIndex + 1, 0, 'Price');
+            } else {
+                displayHeaders.push('Price');
+            }
 
             let tableHTML = '<table class="table table-striped table-bordered">';
             tableHTML += '<thead class="table-dark">';
@@ -81,7 +87,9 @@ document.addEventListener('DOMContentLoaded', () => {
             results.forEach((result, index) => {
                 tableHTML += '<tr>';
                 displayHeaders.forEach(header => {
-                    if (header === 'Price') {
+                    if (header === '价格（税前）') {
+                        tableHTML += `<td>${result['货币']} ${result[header]}</td>`;
+                    } else if (header === 'Price') {
                         const localPrice = parseFloat(String(result['价格（税前）']).replace(/,/g, ''));
                         const localCurrency = result['货币'];
                         if (rates[localCurrency] && rates[selectedCurrency] && !isNaN(localPrice)) {
