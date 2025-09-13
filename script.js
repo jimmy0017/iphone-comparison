@@ -54,27 +54,23 @@ document.addEventListener('DOMContentLoaded', () => {
         );
 
         if (results.length > 0) {
-            let resultHTML = '';
-            results.forEach(result => {
-                const localPrice = result['价格（税前）'];
-                const localCurrency = result['货币'];
-                const convertedPrice = selectedCurrency === 'USD' ? result['价格（美金）'] : result['价格（人民币）'];
-
-                resultHTML += `<div class="result-item">`;
-                resultHTML += `<h2>${result['型号']} - ${result['空间']} (${result['国家/地区']})</h2>`;
-                resultHTML += `<p><strong>Local Price:</strong> ${localCurrency} ${localPrice}</p>`;
-                resultHTML += `<p><strong>Price (Before Tax):</strong> ${result['价格（税前）']}</p>`;
-                resultHTML += `<p><strong>Converted Price:</strong> ${convertedPrice}</p>`;
-                resultHTML += '<ul>';
-                for (const key in result) {
-                    if (key !== '型号' && key !== '空间' && key !== '价格（美金）' && key !== '价格（人民币）' && key !== '价格（税前）' && key !== '货币' && key !== '国家/地区') {
-                        resultHTML += `<li><strong>${key}:</strong> ${result[key]}</li>`;
-                    }
-                }
-                resultHTML += '</ul>';
-                resultHTML += `</div>`;
+            const headers = Object.keys(results[0]);
+            let tableHTML = '<table>';
+            tableHTML += '<thead><tr>';
+            headers.forEach(header => {
+                tableHTML += `<th>${header}</th>`;
             });
-            resultDiv.innerHTML = resultHTML;
+            tableHTML += '</tr></thead>';
+            tableHTML += '<tbody>';
+            results.forEach(result => {
+                tableHTML += '<tr>';
+                headers.forEach(header => {
+                    tableHTML += `<td>${result[header]}</td>`;
+                });
+                tableHTML += '</tr>';
+            });
+            tableHTML += '</tbody></table>';
+            resultDiv.innerHTML = tableHTML;
         } else {
             resultDiv.innerHTML = '<p>No data found for the selected combination.</p>';
         }
