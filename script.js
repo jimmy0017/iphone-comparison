@@ -55,8 +55,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (results.length > 0) {
             const headers = Object.keys(results[0]);
-            let tableHTML = '<table>';
-            tableHTML += '<thead><tr>';
+            let tableHTML = '<table class="table table-striped table-bordered">';
+            tableHTML += '<thead class="table-dark">';
+            tableHTML += '<tr>';
             headers.forEach(header => {
                 tableHTML += `<th>${header}</th>`;
             });
