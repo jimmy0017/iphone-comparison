@@ -6,12 +6,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const resultDiv = document.getElementById('result');
 
     let data = [];
+    let countryChoices, modelChoices, storageChoices;
 
     fetch('prices.json')
         .then(response => response.json())
         .then(jsonData => {
             data = jsonData;
             populateFilters();
+            initChoices();
             updateResult();
         });
 
@@ -26,11 +28,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function populateSelect(selectElement, options) {
-        const allOption = document.createElement('option');
-        allOption.value = 'All';
-        allOption.textContent = 'All';
-        selectElement.appendChild(allOption);
-
         options.forEach(option => {
             if (option) {
                 const optionElement = document.createElement('option');
@@ -41,16 +38,29 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    function initChoices() {
+        const choicesOptions = {
+            removeItemButton: true,
+        };
+        countryChoices = new Choices(countrySelect, choicesOptions);
+        modelChoices = new Choices(modelSelect, choicesOptions);
+        storageChoices = new Choices(storageSelect, choicesOptions);
+
+        countrySelect.addEventListener('change', updateResult);
+        modelSelect.addEventListener('change', updateResult);
+        storageSelect.addEventListener('change', updateResult);
+    }
+
     function updateResult() {
-        const selectedCountry = countrySelect.value;
-        const selectedModel = modelSelect.value;
-        const selectedStorage = storageSelect.value;
+        const selectedCountries = countryChoices.getValue(true);
+        const selectedModels = modelChoices.getValue(true);
+        const selectedStorages = storageChoices.getValue(true);
         const selectedCurrency = currencySelect.value;
 
-        const results = data.filter(item => 
-            (selectedCountry === 'All' || item['国家/地区'] === selectedCountry) &&
-            (selectedModel === 'All' || item['型号'] === selectedModel) &&
-            (selectedStorage === 'All' || item['空间'] === selectedStorage)
+        const results = data.filter(item =>
+            (selectedCountries.length === 0 || selectedCountries.includes(item['国家/地区'])) &&
+            (selectedModels.length === 0 || selectedModels.includes(item['型号'])) &&
+            (selectedStorages.length === 0 || selectedStorages.includes(item['空间']))
         );
 
         if (results.length > 0) {
@@ -63,10 +73,22 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             tableHTML += '</tr></thead>';
             tableHTML += '<tbody>';
-            results.forEach(result => {
+            results.forEach((result, index) => {
                 tableHTML += '<tr>';
                 headers.forEach(header => {
-                    tableHTML += `<td>${result[header]}</td>`;
+                    if (header === '基础频段（相较美国）') {
+                        const collapseId = `collapse-${index}`;
+                        tableHTML += `<td>`;
+                        tableHTML += `<button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#${collapseId}" aria-expanded="false" aria-controls="${collapseId}">`;
+                        tableHTML += `Show/Hide`;
+                        tableHTML += `</button>`;
+                        tableHTML += `<div class="collapse" id="${collapseId}">`;
+                        tableHTML += result[header];
+                        tableHTML += `</div>`;
+                        tableHTML += `</td>`;
+                    } else {
+                        tableHTML += `<td>${result[header]}</td>`;
+                    }
                 });
                 tableHTML += '</tr>';
             });
@@ -77,8 +99,5 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    countrySelect.addEventListener('change', updateResult);
-    modelSelect.addEventListener('change', updateResult);
-    storageSelect.addEventListener('change', updateResult);
     currencySelect.addEventListener('change', updateResult);
 });
