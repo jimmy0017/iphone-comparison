@@ -26,6 +26,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function populateSelect(selectElement, options) {
+        const allOption = document.createElement('option');
+        allOption.value = 'All';
+        allOption.textContent = 'All';
+        selectElement.appendChild(allOption);
+
         options.forEach(option => {
             if (option) {
                 const optionElement = document.createElement('option');
@@ -42,28 +47,33 @@ document.addEventListener('DOMContentLoaded', () => {
         const selectedStorage = storageSelect.value;
         const selectedCurrency = currencySelect.value;
 
-        const result = data.find(item => 
-            item['国家/地区'] === selectedCountry &&
-            item['型号'] === selectedModel &&
-            item['空间'] === selectedStorage
+        const results = data.filter(item => 
+            (selectedCountry === 'All' || item['国家/地区'] === selectedCountry) &&
+            (selectedModel === 'All' || item['型号'] === selectedModel) &&
+            (selectedStorage === 'All' || item['空间'] === selectedStorage)
         );
 
-        if (result) {
-            const localPrice = result['价格（税前）'];
-            const localCurrency = result['货币'];
-            const convertedPrice = selectedCurrency === 'USD' ? result['价格（美金）'] : result['价格（人民币）'];
+        if (results.length > 0) {
+            let resultHTML = '';
+            results.forEach(result => {
+                const localPrice = result['价格（税前）'];
+                const localCurrency = result['货币'];
+                const convertedPrice = selectedCurrency === 'USD' ? result['价格（美金）'] : result['价格（人民币）'];
 
-            let resultHTML = `<h2>${result['型号']} - ${result['空间']}</h2>`;
-            resultHTML += `<p><strong>Local Price:</strong> ${localCurrency} ${localPrice}</p>`;
-            resultHTML += `<p><strong>Price (Before Tax):</strong> ${result['价格（税前）']}</p>`;
-            resultHTML += `<p><strong>Converted Price:</strong> ${convertedPrice}</p>`;
-            resultHTML += '<ul>';
-            for (const key in result) {
-                if (key !== '型号' && key !== '空间' && key !== '价格（美金）' && key !== '价格（人民币）' && key !== '价格（税前）' && key !== '货币') {
-                    resultHTML += `<li><strong>${key}:</strong> ${result[key]}</li>`;
+                resultHTML += `<div class="result-item">`;
+                resultHTML += `<h2>${result['型号']} - ${result['空间']} (${result['国家/地区']})</h2>`;
+                resultHTML += `<p><strong>Local Price:</strong> ${localCurrency} ${localPrice}</p>`;
+                resultHTML += `<p><strong>Price (Before Tax):</strong> ${result['价格（税前）']}</p>`;
+                resultHTML += `<p><strong>Converted Price:</strong> ${convertedPrice}</p>`;
+                resultHTML += '<ul>';
+                for (const key in result) {
+                    if (key !== '型号' && key !== '空间' && key !== '价格（美金）' && key !== '价格（人民币）' && key !== '价格（税前）' && key !== '货币' && key !== '国家/地区') {
+                        resultHTML += `<li><strong>${key}:</strong> ${result[key]}</li>`;
+                    }
                 }
-            }
-            resultHTML += '</ul>';
+                resultHTML += '</ul>';
+                resultHTML += `</div>`;
+            });
             resultDiv.innerHTML = resultHTML;
         } else {
             resultDiv.innerHTML = '<p>No data found for the selected combination.</p>';
