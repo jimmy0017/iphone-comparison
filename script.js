@@ -6,16 +6,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const resultDiv = document.getElementById('result');
 
     let data = [];
+    let rates = {};
     let countryChoices, modelChoices, storageChoices;
 
-    fetch('prices.json')
-        .then(response => response.json())
-        .then(jsonData => {
-            data = jsonData;
-            populateFilters();
-            initChoices();
-            updateResult();
-        });
+    Promise.all([
+        fetch('prices.json').then(response => response.json()),
+        fetch('rates.json').then(response => response.json())
+    ]).then(([jsonData, ratesData]) => {
+        data = jsonData;
+        rates = ratesData;
+        populateFilters();
+        initChoices();
+        updateResult();
+    });
 
     function populateFilters() {
         const countries = [...new Set(data.map(item => item['国家/地区']))];
@@ -64,19 +67,31 @@ document.addEventListener('DOMContentLoaded', () => {
         );
 
         if (results.length > 0) {
-            const headers = Object.keys(results[0]);
+            const headers = Object.keys(results[0]).filter(header => header !== '价格（美金）' && header !== '价格（人民币）');
+            const displayHeaders = [...headers, 'Price'];
+
             let tableHTML = '<table class="table table-striped table-bordered">';
             tableHTML += '<thead class="table-dark">';
             tableHTML += '<tr>';
-            headers.forEach(header => {
+            displayHeaders.forEach(header => {
                 tableHTML += `<th>${header}</th>`;
             });
             tableHTML += '</tr></thead>';
             tableHTML += '<tbody>';
             results.forEach((result, index) => {
                 tableHTML += '<tr>';
-                headers.forEach(header => {
-                    if (header === '基础频段（相较美国）') {
+                displayHeaders.forEach(header => {
+                    if (header === 'Price') {
+                        const localPrice = parseFloat(String(result['价格（税前）']).replace(/,/g, ''));
+                        const localCurrency = result['货币'];
+                        if (rates[localCurrency] && rates[selectedCurrency] && !isNaN(localPrice)) {
+                            const priceInUSD = localPrice * rates[localCurrency];
+                            const convertedPrice = priceInUSD / rates[selectedCurrency];
+                            tableHTML += `<td>${selectedCurrency} ${convertedPrice.toFixed(2)}</td>`;
+                        } else {
+                            tableHTML += `<td>N/A</td>`;
+                        }
+                    } else if (header === '基础频段（相较美国）') {
                         const collapseId = `collapse-${index}`;
                         tableHTML += `<td>`;
                         tableHTML += `<button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#${collapseId}" aria-expanded="false" aria-controls="${collapseId}">`;
