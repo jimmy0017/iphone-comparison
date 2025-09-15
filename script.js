@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let data = [];
     let rates = {};
     let countryChoices, modelChoices, storageChoices;
+    let dataTable;
 
     Promise.all([
         fetch('prices.json').then(response => response.json()),
@@ -66,6 +67,10 @@ document.addEventListener('DOMContentLoaded', () => {
             (selectedStorages.length === 0 || selectedStorages.includes(item['空间']))
         );
 
+        if (dataTable) {
+            dataTable.destroy();
+        }
+
         if (results.length > 0) {
             const headers = Object.keys(results[0]).filter(header => header !== '价格（美金）' && header !== '价格（人民币）' && header !== '货币');
             const priceIndex = headers.indexOf('价格（税前）');
@@ -76,7 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 displayHeaders.push('Price');
             }
 
-            let tableHTML = '<table class="table table-striped table-bordered">';
+            let tableHTML = '<table id="pricesTable" class="table table-striped table-bordered">';
             tableHTML += '<thead class="table-dark">';
             tableHTML += '<tr>';
             displayHeaders.forEach(header => {
@@ -117,6 +122,12 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             tableHTML += '</tbody></table>';
             resultDiv.innerHTML = tableHTML;
+
+            dataTable = new DataTable('#pricesTable', {
+                paging: true,
+                searching: true,
+                ordering: true
+            });
         } else {
             resultDiv.innerHTML = '<p>No data found for the selected combination.</p>';
         }

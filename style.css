@@ -2,3 +2,19 @@ body {
     font-family: sans-serif;
     margin: 20px;
 }
+
+.github-fork-ribbon {
+    position: absolute;
+    top: 0;
+    right: 0;
+    border: 0;
+}
+
+.footer {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.top-description {
+    margin-bottom: 20px;
+}
