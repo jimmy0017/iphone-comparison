@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>iPhone Price Comparison</title>
+    <title>iPhone 世界各国价格对比</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.datatables.net/2.0.8/css/dataTables.dataTables.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
@@ -13,25 +13,29 @@
 <body>
     <a href="https://github.com/jimmy0017/iphone-comparison" class="github-fork-ribbon" data-ribbon="Fork me on GitHub" title="Fork me on GitHub">Fork me on GitHub</a>
     <div class="container">
-        <h1 class="my-4">iPhone Price Comparison</h1>
+        <h1 class="my-4">iPhone 世界各国价格对比</h1>
         <div class="top-description">
-            <p>This page compares the prices of iPhones in different countries. The prices are sourced from Apple's official website and are updated regularly. The exchange rates are also updated regularly.</p>
+            <p>本页面对比了iPhone在不同国家的价格。价格来源于Apple的官方网站，并定期更新。汇率也将定期更新。欢迎提交PR，一起完善这个页面。<br/>
+                以下价格均未包含税费或者退税。
+                <br/>
+                <a href="https://www.uscreditcardguide.com/xiangyaotongshichameiguohezhongguodesimkaiphone-17-xiliegezhuyaoguojiadiqubanbenxuangouzhinan/" target="_blank">阅读更多</a>
+            </p>
         </div>
         <div class="filters row mb-4">
             <div class="col-md-3">
-                <label for="country" class="form-label">Country:</label>
+                <label for="country" class="form-label">国家/地区:</label>
                 <select id="country" class="form-select" multiple></select>
             </div>
             <div class="col-md-3">
-                <label for="model" class="form-label">Model:</label>
+                <label for="model" class="form-label">型号:</label>
                 <select id="model" class="form-select" multiple></select>
             </div>
             <div class="col-md-3">
-                <label for="storage" class="form-label">Storage:</label>
+                <label for="storage" class="form-label">空间:</label>
                 <select id="storage" class="form-select" multiple></select>
             </div>
             <div class="col-md-3">
-                <label for="currency" class="form-label">Currency:</label>
+                <label for="currency" class="form-label">转换货币:</label>
                 <select id="currency" class="form-select">
                     <option value="USD">USD</option>
                     <option value="CNY">CNY</option>
